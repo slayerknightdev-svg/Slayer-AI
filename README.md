@@ -1,22 +1,25 @@
 # Slayer AI
 
-Slayer AI — ko‘p tilli, shaxsiy mahalliy AI chat sayti. Oddiy chat va Slayer-Code o‘rtasida yon paneldan almashish, tungi/kunduzgi rejim va 8 ta interfeys tili mavjud. AI javoblari kompyuteringizda ishlaydigan Ollama modelidan olinadi; OpenAI API kaliti yoki pullik token ishlatilmaydi.
+Slayer AI — 8 tilli interfeys, kunduzgi/tungi mavzu va yon paneldan tanlanadigan Slayer AI hamda Slayer-Code rejimlariga ega shaxsiy chat sayti. Javoblar Ollama orqali o‘z serveringizda/kompyuteringizda ishlaydi. OpenAI API kaliti kerak emas.
 
-## O‘rnatish va ishga tushirish
+## GitHub repodan to‘liq ishga tushirish (Docker)
 
-1. Node.js 18+ hamda [Ollama](https://ollama.com/download) o‘rnating.
-2. Terminalda kerakli modellarni yuklang:
+Kompyuteringizga Docker Desktop (yoki Docker Engine va Compose) o‘rnating. Reponi oling:
 
-   ```bash
-   ollama pull llama3.2
-   ollama pull qwen2.5-coder:7b
-   ```
+```bash
+git clone https://github.com/slayerknightdev-svg/Slayer-AI.git
+cd Slayer-AI
+docker compose up --build
+```
 
-   Kod modeli kompyuteringiz resursiga og‘irlik qilsa, `.env` faylida `OLLAMA_CODE_MODEL` qiymatini o‘zingiz yuklagan yengilroq kod modeliga almashtiring. Model nomlarini `ollama list` bilan ko‘rish mumkin.
-3. Ollama dasturini ishga tushiring. `.env.example` faylidan `.env` nusxa olish ixtiyoriy; sozlamalarni muhit o‘zgaruvchilari bilan ham berish mumkin.
-4. Loyiha papkasida terminal ochib `npm start` bajaring.
-5. Brauzerda `http://localhost:3000` ni oching.
+Birinchi ishлалтishda Ollama контейнеры `llama3.2` болон `qwen2.5-coder:7b` загваруудыг автоматаар татна. Тэдгээрийн нийт хэмжээ хэд хэдэн GB тул эхний таталт удаж, диск болон RAM/VRAM шаардаж болно; контейнерийн лог дээр таталтын явцыг харна. Дууссаны дараа `http://localhost:3000` хаягийг нээнэ. Ollama загварууд persistent Docker volume-д хадгалагдана.
 
-Chat modeli `OLLAMA_MODEL`, kod modeli `OLLAMA_CODE_MODEL`, Ollama manzili `OLLAMA_HOST` bilan sozlanadi. Javob tili tanlangan interfeys tiliga ko‘ra so‘raladi; modelning tillarni bilishi uning o‘qitilgan ma’lumotlariga bog‘liq. Sayt boshqa odamlar internet orqali foydalana oladigan serverga joylansa, Ollama ishlaydigan server va kirishni alohida himoyalang.
+Зогсоох: `Ctrl+C`, дараа нь хүсвэл `docker compose down`. AI сайт ажиллахын тулд Docker ажиллаж байгаа компьютер/сервер асаалттай байх ёстой. GitHub репозитор нь кодыг хадгалж, татаж өгдөг болохоос GitHub Pages дангаараа Ollama model ажиллуулахгүй.
 
-[ZIP arxivini yuklab olish](https://github.com/slayerknightdev-svg/Slayer-AI/archive/refs/heads/main.zip)
+Хэрэв хөнгөн model шаардлагатай бол `.env.example`-ийг `.env` болгон хуулж, `OLLAMA_MODEL` болон `OLLAMA_CODE_MODEL` утгыг өөрийн компьютерт тохирох Ollama model-оор солино. Шинэ model татахын тулд Ollama container ажиллаж байх үед `docker compose exec ollama ollama pull MODEL_NAME` ажиллуулж, Compose-ийг дахин эхлүүлнэ.
+
+## Node.js + Ollama хувилбар
+
+Node.js 18+ болон Ollama суулгаж, `ollama pull llama3.2`, `ollama pull qwen2.5-coder:7b` командыг ажиллуулаад дараа нь `npm start` ажиллуулна. `http://localhost:3000` нээнэ.
+
+[ZIP архив татах](https://github.com/slayerknightdev-svg/Slayer-AI/archive/refs/heads/main.zip)
