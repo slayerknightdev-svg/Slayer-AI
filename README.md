@@ -1,23 +1,28 @@
 # Slayer AI
 
-O‘zbek tilidagi, mobilga mos AI chat sayti. Frontend oddiy HTML/CSS/JavaScript’da, backend Node.js’da yozilgan. API kaliti serverda `.env` faylida saqlanadi.
+Slayer AI — shaxsiy, o‘z kompyuteringizda ishlaydigan AI chat sayti. Frontend HTML/CSS/JavaScript’da, backend Node.js’da yozilgan; javoblar mahalliy Ollama modelidan olinadi. OpenAI yoki boshqa pullik token API’si kerak emas.
 
 ## Ishga tushirish
 
-1. Node.js 18 yoki yangiroq versiyasini o‘rnating.
-2. `.env.example` faylidan `.env` nusxa yarating va `OPENAI_API_KEY` qiymatiga o‘z API kalitingizni kiriting.
-3. Terminalda:
+1. Node.js 18+ va [Ollama](https://ollama.com/download) ni o‘rnating.
+2. Terminalda modelni yuklab oling (misol):
+
+   ```bash
+   ollama pull llama3.2
+   ```
+
+   Ollama xizmatini ishga tushirib qo‘ying. Model fayllari katta bo‘lishi mumkin; kerakli disk hajmi va xotira modelga bog‘liq.
+3. Ixtiyoriy ravishda `.env.example` faylidan `.env` nusxa oling. `OLLAMA_MODEL` qiymatini o‘zingiz yuklagan model nomiga moslang.
+4. Slayer AI papkasida terminal ochib:
 
    ```bash
    npm start
    ```
 
-4. Brauzerda `http://localhost:3000` sahifasini oching.
+5. Brauzerda `http://localhost:3000`-ni oching.
 
-Modelni `OPENAI_MODEL`, OpenAI-compatible server manzilini esa ixtiyoriy `OPENAI_BASE_URL` orqali sozlash mumkin. API kalitini hech qachon GitHub’ga yoki brauzer kodiga joylamang. `.env` Git tomonidan e’tiborsiz qoldiriladi.
+Suhbatlar таны brauzerda хадгалагдана. Mahalliy model uchun API tokeni yoki har bir xabar uchun to‘lov yo‘q, lekin foydalanish tezligi va hajmi kompyuteringizning xotirasi, protsessori yoki videokartasi hamda disk imkoniyatlariga bog‘liq. Sayt boshqa odamlar internet orqali foydalana oladigan serverga joylansa, Ollama ishlaydigan server va kirishni himoyalash ham kerak.
 
 ## ZIP yuklab olish
 
-GitHub repozitoriy sahifasida **Code → Download ZIP** ni tanlang yoki [ZIP arxivini yuklab oling](https://github.com/slayerknightdev-svg/Slayer-AI/archive/refs/heads/main.zip).
-
-Saytni internetga joylaganda Node.js backendni ham ishga tushirish va muhit o‘zgaruvchilariga API kalitini qo‘shish kerak.
+[Slayer AI ZIP arxivini yuklab oling](https://github.com/slayerknightdev-svg/Slayer-AI/archive/refs/heads/main.zip).

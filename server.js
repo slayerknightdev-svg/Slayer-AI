@@ -6,7 +6,6 @@ import { fileURLToPath } from "node:url";
 const root = fileURLToPath(new URL(".", import.meta.url));
 const publicDir = join(root, "public");
 
-// .env faylini tashqi kutubxonasiz yuklaydi. Mavjud environment qiymatlarini bosib ketmaydi.
 try {
   const envText = await readFile(join(root, ".env"), "utf8");
   for (const line of envText.split(/\r?\n/)) {
@@ -15,7 +14,7 @@ try {
     process.env[match[1]] = match[2].replace(/^(['"])(.*)\1$/, "$2");
   }
 } catch {
-  // .env bo'lmasa, hosting platformasidagi environment variables ishlatiladi.
+  // .env ixtiyoriy; muhit o‘zgaruvchilarini to‘g‘ridan-to‘g‘ri ham berish mumkin.
 }
 
 const port = Number(process.env.PORT) || 3000;
@@ -49,12 +48,6 @@ const server = createServer(async (request, response) => {
   const url = new URL(request.url, `http://${request.headers.host || "localhost"}`);
 
   if (request.method === "POST" && url.pathname === "/api/chat") {
-    if (!process.env.OPENAI_API_KEY) {
-      return sendJson(response, 503, {
-        error: "AI API kaliti sozlanmagan. Serverda .env fayliga OPENAI_API_KEY kiriting."
-      });
-    }
-
     let messages;
     try {
       const body = await readJson(request);
@@ -73,41 +66,41 @@ const server = createServer(async (request, response) => {
     }
 
     try {
-      const baseUrl = (process.env.OPENAI_BASE_URL || "https://api.openai.com/v1").replace(/\/+$/, "");
-      const upstream = await fetch(`${baseUrl}/chat/completions`, {
+      const ollamaHost = (process.env.OLLAMA_HOST || "http://127.0.0.1:11434").replace(/\/+$/, "");
+      const model = process.env.OLLAMA_MODEL || "llama3.2";
+      const upstream = await fetch(`${ollamaHost}/api/chat`, {
         method: "POST",
-        headers: {
-          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+          model,
+          stream: false,
           messages: [
-            { role: "system", content: "Sen Slayer AI nomli foydali va samimiy yordamchisan. Foydalanuvchi boshqa tilni so‘ramasa, o‘zbek tilida javob ber." },
+            { role: "system", content: "Sen Slayer AI nomli foydali va samimiy shaxsiy yordamchisan. Foydalanuvchi boshqa tilni so‘ramasa, o‘zbek tilida javob ber." },
             ...messages
-          ],
-          temperature: 0.7
+          ]
         }),
-        signal: AbortSignal.timeout(90_000)
+        signal: AbortSignal.timeout(180_000)
       });
 
       const result = await upstream.json().catch(() => ({}));
       if (!upstream.ok) {
-        console.error("AI provider error:", upstream.status, result.error?.message || "Unknown error");
+        console.error("Ollama error:", upstream.status, result.error || "Unknown error");
         return sendJson(response, 502, {
-          error: result.error?.message || "AI xizmatidan javob olishda xatolik. API kaliti va model sozlamalarini tekshiring."
+          error: result.error || "Ollama modelidan javob olinmadi. Ollama ishlayotganini va model yuklanganini tekshiring."
         });
       }
 
-      const content = result.choices?.[0]?.message?.content;
-      if (typeof content !== "string") {
-        return sendJson(response, 502, { error: "AI bo‘sh yoki noto‘g‘ri javob qaytardi." });
+      const reply = result.message?.content;
+      if (typeof reply !== "string" || !reply.trim()) {
+        return sendJson(response, 502, { error: "Mahalliy AI bo‘sh javob qaytardi." });
       }
-      return sendJson(response, 200, { reply: content });
+      return sendJson(response, 200, { reply: reply.trim() });
     } catch (error) {
-      console.error("AI request failed:", error.message);
-      return sendJson(response, 502, {
-        error: error.name === "TimeoutError" ? "AI javob berishi uzoq davom etdi. Qayta urinib ko‘ring." : "AI serveriga ulanib bo‘lmadi. Internet va API manzilini tekshiring."
+      console.error("Ollama so‘rovi bajarilmadi:", error.message);
+      return sendJson(response, 503, {
+        error: error.name === "TimeoutError"
+          ? "AI javob berishi uzoq davom etdi. Yengilroq modelni sinab ko‘ring."
+          : "Ollama bilan aloqa yo‘q. Ollama o‘rnatilganini va ishga tushganini, model yuklanganini tekshiring. Masalan: ollama pull llama3.2"
       });
     }
   }
