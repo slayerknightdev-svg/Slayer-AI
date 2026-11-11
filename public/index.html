@@ -1,63 +1,70 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#212121">
-  <meta name="description" content="Slayer AI — shaxsiy sun’iy intellekt yordamchingiz.">
+  <meta name="description" content="Slayer AI — ko‘p tilli, shaxsiy mahalliy AI yordamchi va kodlash muhiti.">
   <title>Slayer AI</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <div class="app-shell">
-    <aside class="sidebar" id="sidebar" aria-label="Suhbatlar paneli">
+    <aside class="sidebar" id="sidebar" aria-label="Yon panel">
       <div class="sidebar-header">
         <a class="brand" href="/" aria-label="Slayer AI bosh sahifa"><span class="brand-mark">✳</span><span>Slayer AI</span></a>
         <button class="icon-button close-sidebar" id="closeSidebar" aria-label="Menyuni yopish">×</button>
       </div>
-      <button class="new-chat" id="newChat"><span class="plus">＋</span><span>Yangi chat</span><span class="shortcut">Ctrl K</span></button>
-      <div class="section-label">Yaqindagi suhbatlar</div>
+      <div class="mode-switch" aria-label="Yordamchi turini tanlang">
+        <button class="mode-button active" data-mode="chat" id="chatMode">✳ <span>Slayer AI</span></button>
+        <button class="mode-button" data-mode="code" id="codeMode">⌘ <span>Slayer-Code</span></button>
+      </div>
+      <button class="new-chat" id="newChat"><span class="plus">＋</span><span data-i18n="newChat">Yangi chat</span><span class="shortcut">Ctrl K</span></button>
+      <div class="section-label" data-i18n="recent">Yaqindagi suhbatlar</div>
       <nav class="chat-list" id="chatList" aria-label="Suhbatlar"></nav>
+      <div class="sidebar-settings">
+        <label class="setting-label" for="languageSelect" data-i18n="language">Til</label>
+        <select id="languageSelect" aria-label="Interfeys tili">
+          <option value="uz">O‘zbekcha</option><option value="en">English</option><option value="ru">Русский</option>
+          <option value="tr">Türkçe</option><option value="es">Español</option><option value="fr">Français</option>
+          <option value="de">Deutsch</option><option value="ar">العربية</option>
+        </select>
+        <button class="theme-button" id="themeToggle" type="button"><span id="themeIcon">☀</span><span data-i18n="lightMode">Kunduzgi rejim</span></button>
+      </div>
       <div class="sidebar-bottom">
         <div class="account-avatar">S</div>
-        <div class="account-info"><strong>Slayer</strong><span>Shaxsiy yordamchi</span></div>
+        <div class="account-info"><strong>Slayer</strong><span data-i18n="personalAssistant">Shaxsiy yordamchi</span></div>
         <span class="more-icon">···</span>
       </div>
     </aside>
-
     <button class="sidebar-backdrop" id="backdrop" aria-label="Menyuni yopish"></button>
-
     <main class="main-panel">
       <header class="topbar">
         <div class="topbar-left">
           <button class="icon-button menu-toggle" id="openSidebar" aria-label="Menyuni ochish">☰</button>
-          <div class="model-name">Slayer <span>AI</span><span class="model-chevron">⌄</span></div>
+          <div class="model-name" id="currentModel">Slayer <span>AI</span><span class="model-chevron">⌄</span></div>
         </div>
-        <button class="share-button" id="shareButton"><span aria-hidden="true">↗</span> Ulashish</button>
+        <button class="share-button" id="shareButton"><span aria-hidden="true">↗</span> <span data-i18n="share">Ulashish</span></button>
       </header>
-
       <section class="chat-area" aria-label="AI bilan suhbat">
         <div class="welcome" id="welcome">
-          <div class="welcome-icon">✳</div>
-          <h1>Bugun sizga qanday yordam bera olaman?</h1>
-          <p>Savolingizni yozing — suhbatni boshlaymiz.</p>
-          <div class="suggestions">
-            <button class="suggestion" data-prompt="Menga yangi g‘oyalar topishga yordam ber">✦ <span>G‘oyalar topish</span></button>
-            <button class="suggestion" data-prompt="Biror mavzuni sodda qilib tushuntirib ber">◉ <span>Mavzuni tushuntirish</span></button>
-            <button class="suggestion" data-prompt="Bugungi ishlarim uchun reja tuzishga yordam ber">▤ <span>Reja tuzish</span></button>
-            <button class="suggestion" data-prompt="Menga qisqa matn yozishda yordam ber">✎ <span>Matn yozish</span></button>
+          <div class="welcome-icon" id="welcomeIcon">✳</div>
+          <h1 id="welcomeTitle">Bugun sizga qanday yordam bera olaman?</h1>
+          <p id="welcomeSubtitle">Savolingizni yozing — suhbatni boshlaymiz.</p>
+          <div class="suggestions" id="suggestions">
+            <button class="suggestion" data-prompt-key="ideas">✦ <span data-i18n="ideas">G‘oyalar topish</span></button>
+            <button class="suggestion" data-prompt-key="explain">◉ <span data-i18n="explain">Mavzuni tushuntirish</span></button>
+            <button class="suggestion" data-prompt-key="plan">▤ <span data-i18n="plan">Reja tuzish</span></button>
+            <button class="suggestion code-suggestion" data-prompt-key="codePrompt" hidden>⌘ <span data-i18n="codePrompt">Kod yozish yoki xatoni tuzatish</span></button>
+            <button class="suggestion" data-prompt-key="write">✎ <span data-i18n="write">Matn yozish</span></button>
           </div>
         </div>
         <div class="messages" id="messages" aria-live="polite" hidden></div>
-
         <form class="composer" id="chatForm">
           <textarea id="messageInput" rows="1" placeholder="Slayer AI’dan so‘rang" aria-label="Xabaringizni yozing"></textarea>
-          <div class="composer-tools">
-            <span class="composer-note">AI xato qilishi mumkin. Muhim ma’lumotlarni tekshiring.</span>
-            <button class="send-button" id="sendButton" type="submit" disabled aria-label="Xabarni yuborish">↑</button>
-          </div>
+          <div class="composer-tools"><span class="composer-note" data-i18n="disclaimerShort">AI xato qilishi mumkin. Muhim ma’lumotlarni tekshiring.</span><button class="send-button" id="sendButton" type="submit" disabled aria-label="Xabarni yuborish">↑</button></div>
         </form>
-        <div class="disclaimer">Slayer AI javoblari sun’iy intellekt yordamida yaratiladi.</div>
+        <div class="disclaimer" data-i18n="disclaimer">Slayer AI javoblari sun’iy intellekt yordamida yaratiladi.</div>
       </section>
     </main>
   </div>
