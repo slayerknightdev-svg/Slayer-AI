@@ -1,0 +1,12 @@
+/* Ensure the HTML hidden attribute works even on elements with display:flex/grid. */
+[hidden] { display: none !important; }
+
+/* Keep long conversations contained in the chat area rather than pushing the composer off-screen. */
+.chat-area { overflow: hidden; }
+.messages { min-height: 0; }
+
+/* Improve keyboard focus visibility and prevent awkward selection colors. */
+button:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--accent, #a397ff);
+  outline-offset: 2px;
+}
